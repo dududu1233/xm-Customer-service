@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from .config import APP_PORT
@@ -38,6 +39,14 @@ OPENAPI_TAGS = [
 ]
 
 app = FastAPI(title="Edu Data API", version="0.1.0", openapi_tags=OPENAPI_TAGS)
+
+# 允许前端调试页（edu-agent 18082 端口）跨域调用本服务拉取订单等数据
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(users_router)
 app.include_router(courses_router)

@@ -3,190 +3,1152 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>教育智能客服 · 调试页</title>
+<title>教育智能客服</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
-    background: #f0f2f5;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+
+  :root {
+    --primary: #4f6ef7;
+    --primary-dark: #3a55d9;
+    --primary-light: #eef1fe;
+    --bg: #f5f7fb;
+    --card: #ffffff;
+    --text: #1f2430;
+    --text-sub: #8a92a6;
+    --border: #e8ecf3;
+    --radius: 14px;
+    --shadow: 0 8px 30px rgba(31, 36, 48, 0.08);
   }
-  .chat-box {
-    width: 520px;
-    height: 700px;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,.12);
+
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    background: linear-gradient(135deg, #eef2ff 0%, #f5f7fb 40%, #eef8f3 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 1180px;
+    height: min(820px, calc(100vh - 32px));
+    background: var(--card);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    display: flex;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ===== 左侧边栏 ===== */
+  .sidebar {
+    width: 240px;
+    background: linear-gradient(180deg, #4f6ef7 0%, #3a55d9 100%);
+    color: #fff;
+    padding: 24px 16px;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    flex-shrink: 0;
   }
-  .chat-header {
-    background: #4a7cf7;
+  .sidebar .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  .sidebar .logo .logo-icon {
+    width: 40px; height: 40px;
+    background: rgba(255,255,255,.18);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .sidebar .logo .logo-text {
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 1.3;
+  }
+  .sidebar .logo .logo-text small {
+    display: block;
+    font-weight: 400;
+    font-size: 11px;
+    opacity: .8;
+  }
+  .sidebar .status {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,.12);
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    margin-bottom: 24px;
+  }
+  .sidebar .status .dot {
+    width: 8px; height: 8px;
+    background: #34d399;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100% {opacity:1} 50% {opacity:.4} }
+  .sidebar .nav-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: .7;
+    margin-bottom: 10px;
+  }
+  .sidebar .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background .2s;
+    margin-bottom: 2px;
+  }
+  .sidebar .nav-item:hover { background: rgba(255,255,255,.12); }
+  .sidebar .nav-item .emoji { font-size: 16px; }
+  .sidebar .new-session {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: rgba(255,255,255,.15);
+    border: 1px dashed rgba(255,255,255,.4);
+    padding: 9px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .2s;
+    margin-bottom: 16px;
     color: #fff;
-    padding: 16px 20px;
-    font-size: 17px;
+  }
+  .sidebar .new-session:hover { background: rgba(255,255,255,.25); }
+  .sidebar .footer {
+    margin-top: auto;
+    font-size: 11px;
+    opacity: .6;
+    line-height: 1.6;
+  }
+
+  /* ===== 主聊天区 ===== */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  /* 头部 */
+  .chat-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,.8);
+    backdrop-filter: blur(10px);
+    z-index: 5;
+  }
+  .chat-header .avatar {
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, #4f6ef7, #7c5cf0);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 20px;
+    box-shadow: 0 4px 12px rgba(79,110,247,.3);
+  }
+  .chat-header .info .name { font-weight: 600; font-size: 15px; }
+  .chat-header .info .sub { font-size: 12px; color: var(--text-sub); }
+  .chat-header .user-chip {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 6px;
+    background: var(--primary-light);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--primary-dark);
+  }
+  .chat-header .user-chip input {
+    width: 52px; border: none; outline: none;
+    background: transparent;
+    font-size: 12px; color: var(--primary-dark);
     font-weight: 600;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
   }
-  .chat-header .sub { font-size: 12px; font-weight: 400; opacity: .85; }
-  .user-bar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    background: #fafafa;
-    border-bottom: 1px solid #eee;
-    font-size: 13px;
-    color: #555;
-  }
-  .user-bar input {
-    width: 90px;
-    padding: 4px 8px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 13px;
-  }
+
+  /* 消息区 */
   .messages {
     flex: 1;
     overflow-y: auto;
-    padding: 16px;
+    padding: 24px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    background: #f7f8fa;
+    gap: 16px;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(79,110,247,.04), transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(52,211,153,.05), transparent 40%),
+      var(--bg);
   }
-  .msg {
-    max-width: 80%;
-    padding: 10px 14px;
-    border-radius: 10px;
-    line-height: 1.6;
+
+  .msg-row { display: flex; gap: 10px; max-width: 82%; animation: fadeUp .3s ease; }
+  @keyframes fadeUp { from {opacity:0; transform: translateY(8px)} to {opacity:1; transform:none} }
+  .msg-row.bot { align-self: flex-start; }
+  .msg-row.user { align-self: flex-end; flex-direction: row-reverse; }
+
+  .msg-row .msg-avatar {
+    width: 34px; height: 34px; flex-shrink: 0;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+  }
+  .msg-row.bot .msg-avatar { background: linear-gradient(135deg,#4f6ef7,#7c5cf0); color:#fff; }
+  .msg-row.user .msg-avatar { background: linear-gradient(135deg,#34d399,#0ea5a4); color:#fff; }
+
+  /* 消息时间戳 */
+  .msg-time {
+    font-size: 11px;
+    color: var(--text-sub);
+    margin-top: 4px;
+    text-align: right;
+    padding-right: 4px;
+  }
+  .msg-row.bot .msg-time { text-align: left; padding-left: 4px; }
+
+  .bubble {
+    padding: 11px 16px;
+    border-radius: 16px;
     font-size: 14px;
+    line-height: 1.65;
     white-space: pre-wrap;
     word-break: break-word;
+    box-shadow: 0 2px 8px rgba(31,36,48,.05);
   }
-  .msg.user {
-    align-self: flex-end;
-    background: #4a7cf7;
+  .msg-row.bot .bubble {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-top-left-radius: 4px;
+    color: var(--text);
+  }
+  .msg-row.user .bubble {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: #fff;
-    border-bottom-right-radius: 2px;
+    border-top-right-radius: 4px;
   }
-  .msg.bot {
-    align-self: flex-start;
-    background: #fff;
-    color: #333;
-    border: 1px solid #e8e8e8;
-    border-bottom-left-radius: 2px;
+
+  /* 打字指示器 */
+  .typing {
+    display: flex; align-items: center; gap: 4px;
+    padding: 14px 18px;
   }
-  .msg.bot.multi { background: #eef6ff; border-color: #cfe0ff; }
-  .input-bar {
-    display: flex;
-    gap: 10px;
-    padding: 12px 16px;
-    border-top: 1px solid #eee;
-    background: #fff;
+  .typing span {
+    width: 7px; height: 7px;
+    background: var(--text-sub);
+    border-radius: 50%;
+    animation: bounce 1.2s infinite;
   }
-  .input-bar input {
-    flex: 1;
-    padding: 10px 14px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 14px;
-    outline: none;
+  .typing span:nth-child(2) { animation-delay: .15s; }
+  .typing span:nth-child(3) { animation-delay: .3s; }
+  @keyframes bounce { 0%,60%,100% {transform:translateY(0);opacity:.5} 30% {transform:translateY(-6px);opacity:1} }
+
+  /* 欢迎卡片 */
+  .welcome-card {
+    align-self: center;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin: 8px 0;
+    text-align: center;
+    max-width: 480px;
+    box-shadow: 0 4px 16px rgba(31,36,48,.06);
+    animation: fadeUp .4s ease;
   }
-  .input-bar input:focus { border-color: #4a7cf7; }
-  .input-bar button {
-    padding: 10px 22px;
-    background: #4a7cf7;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    cursor: pointer;
-  }
-  .input-bar button:hover { background: #3a6ae0; }
-  .input-bar button:disabled { background: #a9bcf0; cursor: not-allowed; }
-  .typing { color: #999; font-size: 13px; font-style: italic; padding: 4px 6px; }
+  .welcome-card .wc-icon { font-size: 34px; margin-bottom: 8px; }
+  .welcome-card .wc-title { font-weight: 600; font-size: 16px; margin-bottom: 6px; }
+  .welcome-card .wc-desc { font-size: 13px; color: var(--text-sub); line-height: 1.6; }
+
+  /* 快捷建议 */
   .quick-bar {
-    display: flex;
-    gap: 6px;
-    padding: 8px 16px;
+    display: flex; gap: 8px;
+    padding: 10px 24px;
+    overflow-x: auto;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+  }
+  .quick-bar::-webkit-scrollbar { height: 0; }
+  .quick-btn {
+    flex-shrink: 0;
+    font-size: 12.5px;
+    padding: 7px 14px;
+    border: 1px solid #d8dffb;
+    border-radius: 20px;
     background: #fff;
-    border-top: 1px dashed #eee;
-    flex-wrap: wrap;
-  }
-  .quick-bar button {
-    font-size: 12px;
-    padding: 4px 10px;
-    border: 1px solid #d4dcf5;
-    border-radius: 12px;
-    background: #f4f7ff;
-    color: #4a7cf7;
+    color: var(--primary-dark);
     cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap;
   }
-  .quick-bar button:hover { background: #e4ecff; }
+  .quick-btn:hover { background: var(--primary-light); border-color: var(--primary); transform: translateY(-1px); }
+
+  /* 输入区 */
+  .input-bar {
+    display: flex; gap: 10px;
+    padding: 14px 24px 18px;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+  }
+  .input-wrap {
+    flex: 1;
+    display: flex; align-items: center;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 24px;
+    padding: 0 6px 0 16px;
+    transition: border-color .2s;
+  }
+  .input-wrap:focus-within { border-color: var(--primary); background: #fff; }
+  .input-wrap input {
+    flex: 1;
+    border: none; outline: none;
+    background: transparent;
+    font-size: 14px;
+    padding: 11px 0;
+    color: var(--text);
+  }
+  .send-btn {
+    width: 38px; height: 38px;
+    border: none; border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform .15s, opacity .2s;
+    flex-shrink: 0;
+  }
+  .send-btn:hover { transform: scale(1.08); }
+  .send-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+  /* 信息面板（tab） */
+  .info-panel {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 24px 12px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  .info-tabs {
+    display: flex; align-items: center; gap: 5px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .info-tabs .tab {
+    border: none; background: none;
+    font-size: 12.5px; color: var(--text-sub);
+    padding: 5px 10px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap;
+  }
+  .info-tabs .tab:hover { background: var(--primary-light); color: var(--primary-dark); }
+  .info-tabs .tab.active {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    font-weight: 600;
+  }
+  .info-tabs .refresh-btn {
+    margin-left: auto;
+    border: none; background: none;
+    font-size: 15px; color: var(--text-sub);
+    cursor: pointer; padding: 2px 8px;
+    border-radius: 6px;
+  }
+  .info-tabs .refresh-btn:hover { background: var(--primary-light); color: var(--primary); }
+  .tab-panel.hidden { display: none; }
+  .orders-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; align-content: start; }
+  .order-card {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all .2s;
+    min-width: 0;
+  }
+  .order-card:hover { border-color: var(--primary); background: var(--primary-light); transform: translateY(-1px); }
+  .order-card .oc-id { font-weight: 600; font-size: 13px; color: var(--text); flex-shrink: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .order-card .oc-status {
+    font-size: 11px; padding: 2px 8px;
+    border-radius: 10px; flex-shrink: 0;
+  }
+  .oc-status.paid { background: #dcfce7; color: #15803d; }
+  .oc-status.pending { background: #fef9c3; color: #a16207; }
+  .oc-status.completed { background: #dbeafe; color: #1d4ed8; }
+  .oc-status.cancelled { background: #fee2e2; color: #b91c1c; }
+  .oc-status.refunded, .oc-status.partial_refunded { background: #f3e8ff; color: #7e22ce; }
+  .oc-status.unknown { background: #f1f5f9; color: #64748b; }
+  .oc-status.active { background: #dcfce7; color: #15803d; }
+  .oc-status.processing { background: #fef9c3; color: #a16207; }
+  .oc-status.resolved { background: #dcfce7; color: #15803d; }
+  .oc-status.closed { background: #f1f5f9; color: #64748b; }
+  .oc-status.approved { background: #dbeafe; color: #1d4ed8; }
+  .oc-status.rejected { background: #fee2e2; color: #b91c1c; }
+  .oc-status.used { background: #f1f5f9; color: #64748b; }
+  .oc-status.expired { background: #fee2e2; color: #b91c1c; }
+  .oc-status.unused { background: #dcfce7; color: #15803d; }
+  .order-card .oc-amount {
+    margin-left: auto;
+    font-size: 13px; font-weight: 600;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+  .order-card .oc-time { font-size: 11px; color: var(--text-sub); flex-shrink: 0; }
+  .order-card .oc-sub { font-size: 11px; color: var(--text-sub); flex-shrink: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .order-card .oc-cover {
+    width: 42px; height: 30px; flex-shrink: 0;
+    border-radius: 7px;
+    background: linear-gradient(135deg,#4f6ef7,#7c5cf0);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    overflow: hidden;
+  }
+  .order-card .oc-cover img { width: 100%; height: 100%; object-fit: cover; }
+  .order-card .oc-arrow { color: var(--text-sub); font-size: 12px; margin-left: auto; }
+  .order-card:hover .oc-arrow { color: var(--primary); }
+  .info-empty { font-size: 12px; color: var(--text-sub); padding: 8px 4px; text-align: center; }
+  .hidden { display: none; }
+
+  /* 课程详情卡片（聊天区） */
+  .course-bubble { max-width: 340px; padding: 14px 16px; }
+  .course-card { font-size: 13px; line-height: 1.6; }
+  .cc-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .cc-icon {
+    width: 40px; height: 40px; flex-shrink: 0;
+    border-radius: 10px;
+    background: linear-gradient(135deg,#4f6ef7,#7c5cf0);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: #fff;
+  }
+  .cc-name { font-weight: 600; font-size: 14px; color: var(--text); }
+  .cc-meta { font-size: 12px; color: var(--text-sub); }
+  .cc-desc {
+    font-size: 12.5px; color: #556;
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 10px;
+  }
+  .cc-subtitle {
+    font-size: 12px; font-weight: 600;
+    color: var(--primary-dark);
+    margin: 8px 0 6px;
+  }
+  .cc-cohort {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+  }
+  .cc-cohort-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .cc-cohort-meta { font-size: 11.5px; color: var(--text-sub); margin-top: 2px; }
+
+  /* 学习概览：统计卡 + 记录行 */
+  .stat-row { display: flex; gap: 8px; }
+  .stat-card {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 8px;
+    text-align: center;
+  }
+  .stat-num { font-size: 20px; font-weight: 700; color: var(--primary-dark); }
+  .stat-label { font-size: 11px; color: var(--text-sub); margin-top: 2px; }
+  .rec-row {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 10px;
+    margin-bottom: 5px;
+  }
+  .rec-icon { font-size: 14px; flex-shrink: 0; }
+  .rec-title {
+    flex: 1;
+    font-size: 12px; color: var(--text);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  /* 移动端 */
+  @media (max-width: 680px) {
+    .sidebar { display: none; }
+    body { padding: 0; }
+    .app { height: 100vh; border-radius: 0; max-width: 100%; }
+  }
 </style>
 </head>
 <body>
 
-<div class="chat-box">
-  <div class="chat-header">
-    <span>🎓 教育智能客服</span>
-    <span class="sub">http://127.0.0.1:18082/api/chat</span>
-  </div>
+<div class="app">
+  <!-- 侧边栏 -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">🎓</div>
+      <div class="logo-text">教育智能客服<small>AI Customer Service</small></div>
+    </div>
+    <div class="status">
+      <span class="dot"></span>
+      客服在线 · 随时为您服务
+    </div>
+    <div class="new-session" onclick="newSession()">
+      <span>➕</span> 新会话
+    </div>
+    <div class="nav-title">能力导航</div>
+    <div class="nav-item" data-tab="orders" onclick="navTo('查一下我的订单 ORD0000033548 的状态','orders')"><span class="emoji">📦</span> 订单查询</div>
+    <div class="nav-item" data-tab="cohorts" onclick="navTo('查一下通用编程入门班的学习进度','cohorts')"><span class="emoji">📚</span> 学习进度</div>
+    <div class="nav-item" data-tab="courses" onclick="navTo('推荐一下适合初学者的编程课程','courses')"><span class="emoji">💡</span> 课程咨询</div>
+    <div class="nav-item" onclick="quick('我要申请退款')"><span class="emoji">💰</span> 退款申请</div>
+    <div class="nav-item" onclick="quick('我要提交工单')"><span class="emoji">🎫</span> 问题工单</div>
+    <div class="footer">edu-agent · qwen3.7-plus<br>Powered by 大模型 + 流程编排</div>
+  </aside>
 
-  <div class="user-bar">
-    用户ID：
-    <input id="user-id" value="281" />
-    <span style="color:#bbb">（对应 edu-data 里的 X-User-Id）</span>
-  </div>
+    <!-- 主聊天区 -->
+  <div class="main">
+    <div class="chat-header">
+      <div class="avatar">🤖</div>
+      <div class="info">
+        <div class="name">智能助手</div>
+        <div class="sub">订单 · 进度 · 退款 · 工单</div>
+      </div>
+      <div class="user-chip">
+        用户
+        <input id="user-id" value="281" title="对应 edu-data 的 X-User-Id" onchange="loadOrders()" />
+      </div>
+    </div>
 
-  <div class="messages" id="messages"></div>
+    <!-- 信息面板（订单 / 班次 / 课程 / 概览 / 优惠券 / 收藏） -->
+    <div class="info-panel">
+      <div class="info-tabs">
+        <button class="tab active" data-tab="orders" onclick="switchTab('orders')">📦 订单</button>
+        <button class="tab" data-tab="cohorts" onclick="switchTab('cohorts')">📚 班次</button>
+        <button class="tab" data-tab="courses" onclick="switchTab('courses')">🔥 课程</button>
+        <button class="tab" data-tab="summary" onclick="switchTab('summary')">🎯 概览</button>
+        <button class="tab" data-tab="coupons" onclick="switchTab('coupons')">🎫 券</button>
+        <button class="tab" data-tab="favorites" onclick="switchTab('favorites')">⭐ 收藏</button>
+        <button class="tab" data-tab="tickets" onclick="switchTab('tickets')">🎧 工单</button>
+        <button class="tab" data-tab="refunds" onclick="switchTab('refunds')">💸 退款</button>
+        <button class="refresh-btn" onclick="refreshCurrentTab()" title="刷新">↻</button>
+      </div>
+      <div class="info-body">
+        <div class="tab-panel" id="tab-orders">
+          <div class="orders-list" id="orders-list">
+            <div class="info-empty">加载中…</div>
+          </div>
+        </div>
+        <div class="tab-panel hidden" id="tab-cohorts">
+          <div class="orders-list" id="cohorts-list">
+            <div class="info-empty">加载中…</div>
+          </div>
+        </div>
+        <div class="tab-panel hidden" id="tab-courses">
+          <div class="orders-list" id="courses-list">
+            <div class="info-empty">加载中…</div>
+          </div>
+        </div>
+        <div class="tab-panel hidden" id="tab-summary">
+          <div class="orders-list" id="summary-list">
+            <div class="info-empty">加载中…</div>
+          </div>
+        </div>
+        <div class="tab-panel hidden" id="tab-coupons">
+          <div class="orders-list" id="coupons-list">
+            <div class="info-empty">加载中…</div>
+          </div>
+        </div>
+        <div class="tab-panel hidden" id="tab-favorites">
+          <div class="orders-list" id="favorites-list">
+            <div class="info-empty">加载中…</div>
+          </div>
+        </div>
+        <div class="tab-panel hidden" id="tab-tickets">
+          <div class="orders-list" id="tickets-list">
+            <div class="info-empty">加载中…</div>
+          </div>
+        </div>
+        <div class="tab-panel hidden" id="tab-refunds">
+          <div class="orders-list" id="refunds-list">
+            <div class="info-empty">加载中…</div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-  <div class="quick-bar">
-    <button onclick="quick('你好')">👋 问候</button>
-    <button onclick="quick('查一下我的订单 ORD0000033548 的状态')">📦 查订单</button>
-    <button onclick="quick('查一下通用编程入门班的学习进度')">📚 学习进度</button>
-    <button onclick="quick('我要退款，订单号 ORD0000033548，课程不适合我')">💰 退款</button>
-    <button onclick="quick('提交工单，订单 ORD0000033548，课程咨询：怎么下载学习资料')">🎫 工单</button>
-  </div>
+    <div class="messages" id="messages">
+      <div class="welcome-card">
+        <div class="wc-icon">👋</div>
+        <div class="wc-title">你好，我是教育智能客服</div>
+        <div class="wc-desc">我可以帮你查订单、查学习进度、了解课程信息，<br>也可以帮你申请退款、提交问题工单。</div>
+      </div>
+    </div>
 
-  <div class="input-bar">
-    <input id="input" placeholder="输入消息，回车发送…" />
-    <button id="send-btn" onclick="send()">发送</button>
+    <div class="quick-bar">
+      <button class="quick-btn" onclick="quick('你好')">👋 问候</button>
+      <button class="quick-btn" onclick="quick('查一下我的订单 ORD0000033548 的状态')">📦 查订单</button>
+      <button class="quick-btn" onclick="quick('查一下通用编程入门班的学习进度')">📚 学习进度</button>
+      <button class="quick-btn" onclick="quick('我要申请退款')">💰 退款</button>
+      <button class="quick-btn" onclick="quick('我要提交工单')">🎫 工单</button>
+    </div>
+
+    <div class="input-bar">
+      <div class="input-wrap">
+        <input id="input" placeholder="输入消息，回车发送…" />
+        <button class="send-btn" id="send-btn" onclick="send()" title="发送">➤</button>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
-// 后端地址：edu-agent 服务（与页面同源，无跨域问题）
 const API_BASE = "http://127.0.0.1:18082";
+const DATA_API_BASE = "http://127.0.0.1:8000";
 
-// 把一条消息加到聊天窗口
-function appendMsg(role, text) {
-  const box = document.getElementById("messages");
-  const div = document.createElement("div");
-  div.className = "msg " + role;
-  div.textContent = text;
-  box.appendChild(div);
-  box.scrollTop = box.scrollHeight;   // 自动滚到底部
+const msgs = document.getElementById("messages");
+
+// 订单状态码 → 中文 + 样式类
+const ORDER_STATUS_MAP = {
+  pending: "待付款", paid: "已支付", completed: "已完成",
+  cancelled: "已取消", partial_refunded: "部分退款", refunded: "已退款",
+};
+
+function currentUserId() {
+  return document.getElementById("user-id").value.trim() || "281";
 }
 
-// 核心：把用户输入发到 /api/chat，拿到回复显示出来
+// ===== 三个 tab 的数据加载 =====
+
+async function loadOrders() {
+  const listEl = document.getElementById("orders-list");
+  listEl.innerHTML = '<div class="info-empty">加载中…</div>';
+  try {
+    const resp = await fetch(DATA_API_BASE + "/api/v1/orders", {
+      headers: { "X-User-Id": currentUserId() }
+    });
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    const data = await resp.json();
+    const orders = (data.data && data.data.list) || [];
+    if (!orders.length) { listEl.innerHTML = '<div class="info-empty">该用户暂无订单</div>'; return; }
+    listEl.innerHTML = "";
+    orders.forEach(function (o) {
+      const statusZh = ORDER_STATUS_MAP[o.orderStatusCode] || o.orderStatusCode || "未知";
+      const statusCls = ORDER_STATUS_MAP[o.orderStatusCode] ? o.orderStatusCode : "unknown";
+      const card = document.createElement("div");
+      card.className = "order-card";
+      card.title = "点击在对话中查询";
+      card.onclick = function () {
+        document.getElementById("input").value = "查一下我的订单 " + o.orderNo + " 的状态";
+        send();
+      };
+      card.innerHTML =
+        '<span class="oc-id">' + o.orderNo + '</span>' +
+        '<span class="oc-status ' + statusCls + '">' + statusZh + '</span>' +
+        '<span class="oc-amount">¥' + (o.payableAmount ?? "-") + '</span>' +
+        '<span class="oc-time">' + (o.createdAt || "").slice(0, 10) + '</span>' +
+        '<span class="oc-arrow">›</span>';
+      listEl.appendChild(card);
+    });
+  } catch (e) {
+    listEl.innerHTML = '<div class="info-empty">订单加载失败：' + e.message + '</div>';
+  }
+}
+
+async function loadCohorts() {
+  const listEl = document.getElementById("cohorts-list");
+  listEl.innerHTML = '<div class="info-empty">加载中…</div>';
+  try {
+    const resp = await fetch(DATA_API_BASE + "/api/v1/me/cohorts", {
+      headers: { "X-User-Id": currentUserId() }
+    });
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    const data = await resp.json();
+    const cohorts = (data.data && data.data.list) || [];
+    if (!cohorts.length) { listEl.innerHTML = '<div class="info-empty">该用户暂无班次</div>'; return; }
+    listEl.innerHTML = "";
+    cohorts.forEach(function (c) {
+      const statusCls = ["active", "completed", "cancelled", "refunded"].includes(c.enrollStatusCode) ? c.enrollStatusCode : "unknown";
+      const statusZh = c.enrollStatusCode === "active" ? "在读"
+        : c.enrollStatusCode === "completed" ? "已结业"
+        : c.enrollStatusCode === "cancelled" ? "已取消"
+        : c.enrollStatusCode === "refunded" ? "已退款" : (c.enrollStatusCode || "未知");
+      const card = document.createElement("div");
+      card.className = "order-card";
+      card.title = "点击查询学习进度";
+      card.onclick = function () {
+        document.getElementById("input").value = "查一下" + c.cohortName + "的学习进度";
+        send();
+      };
+      card.innerHTML =
+        '<span class="oc-id" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + c.cohortName + '</span>' +
+        '<span class="oc-status ' + statusCls + '">' + statusZh + '</span>' +
+        '<span class="oc-sub">' + (c.seriesName || "") + '</span>' +
+        '<span class="oc-arrow">›</span>';
+      listEl.appendChild(card);
+    });
+  } catch (e) {
+    listEl.innerHTML = '<div class="info-empty">班次加载失败：' + e.message + '</div>';
+  }
+}
+
+async function loadCourses() {
+  const listEl = document.getElementById("courses-list");
+  listEl.innerHTML = '<div class="info-empty">加载中…</div>';
+  try {
+    const resp = await fetch(DATA_API_BASE + "/api/v1/series?pageNo=1&pageSize=5", {
+      headers: { "X-User-Id": currentUserId() }
+    });
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    const data = await resp.json();
+    const series = (data.data && data.data.list) || [];
+    if (!series.length) { listEl.innerHTML = '<div class="info-empty">暂无课程</div>'; return; }
+    listEl.innerHTML = "";
+    series.forEach(function (s) {
+      const card = document.createElement("div");
+      card.className = "order-card";
+      card.title = "点击查看课程详情";
+      card.onclick = function () {
+        showCourseDetail(s.seriesId, s.seriesName);
+      };
+      // 封面图：有 coverUrl 就显示图片，否则显示默认图标
+      const cover = s.coverUrl
+        ? '<span class="oc-cover"><img src="' + s.coverUrl + '" onerror="this.style.display=\'none\'" /></span>'
+        : '<span class="oc-cover">📖</span>';
+      card.innerHTML =
+        cover +
+        '<span class="oc-id" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + s.seriesName + '</span>' +
+        '<span class="oc-status completed">⭐' + (s.avgScore || 0).toFixed(1) + '</span>' +
+        '<span class="oc-sub">' + (s.reviewCount || 0) + ' 人评价</span>';
+      listEl.appendChild(card);
+    });
+  } catch (e) {
+    listEl.innerHTML = '<div class="info-empty">课程加载失败：' + e.message + '</div>';
+  }
+}
+
+// ===== 课程详情（点击课程卡片直接展示，不走 LLM）=====
+const DELIVERY_MODE_MAP = {
+  online_recorded: "录播课",
+  online_live: "直播课",
+  offline_face_to_face: "线下面授",
+};
+
+async function showCourseDetail(seriesId, seriesName) {
+  // 在聊天区先放一个 bot 气泡占位
+  const bubble = appendMsg("bot", "正在加载《" + seriesName + "》课程信息…");
+  try {
+    // 并行拉课程详情 + 班次列表
+    const [infoResp, cohortResp] = await Promise.all([
+      fetch(DATA_API_BASE + "/api/v1/series/" + seriesId),
+      fetch(DATA_API_BASE + "/api/v1/series/" + seriesId + "/cohorts"),
+    ]);
+    const infoData = await infoResp.json();
+    const cohortData = await cohortResp.json();
+    const info = infoData.data || {};
+    const cohorts = cohortData.data || [];
+
+    // 组装 HTML 卡片
+    let html = '<div class="course-card">';
+    html += '<div class="cc-head">';
+    html += '<span class="cc-icon">📖</span>';
+    html += '<div><div class="cc-name">' + (info.seriesName || seriesName) + '</div>';
+    html += '<div class="cc-meta">⭐ ' + (info.avgScore || 0).toFixed(1) +
+            ' · ' + (info.reviewCount || 0) + ' 人评价 · ' +
+            (DELIVERY_MODE_MAP[info.deliveryModeCode] || info.deliveryModeCode || "未知") + '</div></div>';
+    html += '</div>';
+    if (info.description) html += '<div class="cc-desc">' + info.description + '</div>';
+
+    // 班次列表
+    if (cohorts.length) {
+      html += '<div class="cc-subtitle">在招班次</div>';
+      cohorts.forEach(function (c) {
+        html += '<div class="cc-cohort">';
+        html += '<div class="cc-cohort-name">' + c.cohortName + '</div>';
+        html += '<div class="cc-cohort-meta">💰 ¥' + c.salePrice +
+                ' · 班主任 ' + (c.headTeacherName || "-") +
+                ' · ' + c.startDate + ' ~ ' + c.endDate +
+                ' · ' + (c.currentStudentCount || 0) + '/' + (c.maxStudentCount || "-") + ' 人</div>';
+        html += '</div>';
+      });
+    } else {
+      html += '<div class="cc-subtitle">暂无在招班次</div>';
+    }
+    html += '</div>';
+
+    // 渲染成 bot 卡片气泡
+    bubble.classList.add("course-bubble");
+    bubble.innerHTML = html;
+    scrollBottom();
+  } catch (e) {
+    bubble.textContent = "课程信息加载失败：" + e.message;
+  }
+}
+
+// ===== 学习概览 / 优惠券 / 收藏 三个 tab =====
+
+async function loadSummary() {
+  const listEl = document.getElementById("summary-list");
+  listEl.innerHTML = '<div class="info-empty">加载中…</div>';
+  try {
+    const resp = await fetch(DATA_API_BASE + "/api/v1/me/learning-summary", {
+      headers: { "X-User-Id": currentUserId() }
+    });
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    const data = await resp.json();
+    const s = data.data || {};
+    let html = "";
+    // 顶部统计卡
+    html += '<div class="stat-row">' +
+      '<div class="stat-card"><div class="stat-num">' + (s.activeCohortCount || 0) + '</div><div class="stat-label">在读班次</div></div>' +
+      '<div class="stat-card"><div class="stat-num">' + (s.completedCohortCount || 0) + '</div><div class="stat-label">已完成</div></div>' +
+      '<div class="stat-card"><div class="stat-num">' + (s.cancelledOrRefundedCohortCount || 0) + '</div><div class="stat-label">已退/取消</div></div>' +
+      '</div>';
+    // 最近学习记录
+    const records = s.recentLearningRecords || [];
+    if (records.length) {
+      html += '<div class="cc-subtitle" style="margin-top:10px">最近学习</div>';
+      records.slice(0, 5).forEach(function (r) {
+        const icon = r.type === "video" ? "🎬" : r.type === "homework" ? "📝" : r.type === "exam" ? "📄" : "📖";
+        html += '<div class="rec-row">' +
+          '<span class="rec-icon">' + icon + '</span>' +
+          '<span class="rec-title">' + (r.title || "") + '</span>' +
+          '<span class="oc-time">' + (r.occurredAt || "").slice(0, 16) + '</span>' +
+          '</div>';
+      });
+    } else {
+      html += '<div class="info-empty">暂无学习记录</div>';
+    }
+    listEl.innerHTML = html;
+  } catch (e) {
+    listEl.innerHTML = '<div class="info-empty">概览加载失败：' + e.message + '</div>';
+  }
+}
+
+const COUPON_STATUS_MAP = { unused: "未使用", used: "已使用", expired: "已过期" };
+
+async function loadCoupons() {
+  const listEl = document.getElementById("coupons-list");
+  listEl.innerHTML = '<div class="info-empty">加载中…</div>';
+  try {
+    const resp = await fetch(DATA_API_BASE + "/api/v1/me/coupons", {
+      headers: { "X-User-Id": currentUserId() }
+    });
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    const data = await resp.json();
+    const coupons = (data.data && data.data.list) || [];
+    if (!coupons.length) { listEl.innerHTML = '<div class="info-empty">暂无优惠券</div>'; return; }
+    listEl.innerHTML = "";
+    coupons.forEach(function (c) {
+      const statusZh = COUPON_STATUS_MAP[c.receiveStatusCode] || c.receiveStatusCode || "未知";
+      const statusCls = ["unused", "used", "expired"].includes(c.receiveStatusCode) ? c.receiveStatusCode : "unknown";
+      const card = document.createElement("div");
+      card.className = "order-card";
+      card.innerHTML =
+        '<span class="oc-cover">🎫</span>' +
+        '<span class="oc-id" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + c.couponName + '</span>' +
+        '<span class="oc-status ' + statusCls + '">' + statusZh + '</span>' +
+        '<span class="oc-sub">到期 ' + (c.expiredAt || "-").slice(0, 10) + '</span>' +
+        '<span class="oc-arrow">›</span>';
+      listEl.appendChild(card);
+    });
+  } catch (e) {
+    listEl.innerHTML = '<div class="info-empty">优惠券加载失败：' + e.message + '</div>';
+  }
+}
+
+async function loadFavorites() {
+  const listEl = document.getElementById("favorites-list");
+  listEl.innerHTML = '<div class="info-empty">加载中…</div>';
+  try {
+    const resp = await fetch(DATA_API_BASE + "/api/v1/me/favorites", {
+      headers: { "X-User-Id": currentUserId() }
+    });
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    const data = await resp.json();
+    const favorites = (data.data && data.data.list) || [];
+    if (!favorites.length) { listEl.innerHTML = '<div class="info-empty">暂无收藏课程</div>'; return; }
+    listEl.innerHTML = "";
+    favorites.forEach(function (f) {
+      const card = document.createElement("div");
+      card.className = "order-card";
+      card.title = "点击查看课程详情";
+      card.onclick = function () { showCourseDetail(f.seriesId, f.seriesName); };
+      card.innerHTML =
+        '<span class="oc-cover">⭐</span>' +
+        '<span class="oc-id" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + f.seriesName + '</span>' +
+        '<span class="oc-sub">收藏于 ' + (f.favoriteCreatedAt || "-").slice(0, 10) + '</span>' +
+        '<span class="oc-arrow">›</span>';
+      listEl.appendChild(card);
+    });
+  } catch (e) {
+    listEl.innerHTML = '<div class="info-empty">收藏加载失败：' + e.message + '</div>';
+  }
+}
+
+const TICKET_STATUS_MAP = { pending: "待处理", processing: "处理中", resolved: "已解决", closed: "已关闭" };
+const TICKET_TYPE_MAP = { after_sales: "售后", complaint: "投诉", refund: "退款" };
+const REFUND_STATUS_MAP = { pending: "审核中", approved: "已通过", rejected: "已拒绝", refunded: "已退款" };
+
+async function loadTickets() {
+  const listEl = document.getElementById("tickets-list");
+  listEl.innerHTML = '<div class="info-empty">加载中…</div>';
+  try {
+    const resp = await fetch(DATA_API_BASE + "/api/v1/service-tickets", {
+      headers: { "X-User-Id": currentUserId() }
+    });
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    const data = await resp.json();
+    const tickets = (data.data && data.data.list) || [];
+    if (!tickets.length) { listEl.innerHTML = '<div class="info-empty">暂无工单记录</div>'; return; }
+    listEl.innerHTML = "";
+    tickets.forEach(function (t) {
+      const statusZh = TICKET_STATUS_MAP[t.ticketStatus] || t.ticketStatus || "未知";
+      const statusCls = ["pending", "processing", "resolved", "closed"].includes(t.ticketStatus) ? t.ticketStatus : "unknown";
+      const typeZh = TICKET_TYPE_MAP[t.ticketType] || t.ticketType || "其他";
+      const card = document.createElement("div");
+      card.className = "order-card";
+      card.title = "点击查看工单详情";
+      card.onclick = function () { showTicketDetail(t.ticketId); };
+      card.innerHTML =
+        '<span class="oc-cover">🎧</span>' +
+        '<span class="oc-id" style="max-width:140px">' + (t.title || "无标题") + '</span>' +
+        '<span class="oc-status ' + statusCls + '">' + statusZh + '</span>' +
+        '<span class="oc-sub">' + typeZh + ' · ' + (t.openedAt || "").slice(5, 16) + '</span>' +
+        '<span class="oc-arrow">›</span>';
+      listEl.appendChild(card);
+    });
+  } catch (e) {
+    listEl.innerHTML = '<div class="info-empty">工单加载失败：' + e.message + '</div>';
+  }
+}
+
+async function showTicketDetail(ticketId) {
+  const bubble = appendMsg("bot", "正在加载工单详情…");
+  try {
+    const [tResp, fResp] = await Promise.all([
+      fetch(DATA_API_BASE + "/api/v1/service-tickets/" + ticketId, { headers: { "X-User-Id": currentUserId() } }),
+      fetch(DATA_API_BASE + "/api/v1/service-tickets/" + ticketId + "/follow-records", { headers: { "X-User-Id": currentUserId() } }),
+    ]);
+    const t = (await tResp.json()).data || {};
+    const follows = ((await fResp.json()).data) || [];
+    const statusZh = TICKET_STATUS_MAP[t.ticketStatus] || t.ticketStatus || "未知";
+    const typeZh = TICKET_TYPE_MAP[t.ticketType] || t.ticketType || "其他";
+
+    let html = '<div class="course-card">';
+    html += '<div class="cc-head"><span class="cc-icon">🎧</span>';
+    html += '<div><div class="cc-name">工单 ' + (t.ticketNo || ticketId) + '</div>';
+    html += '<div class="cc-meta">' + typeZh + ' · ' + statusZh + ' · ' + (t.openedAt || "").slice(0, 16) + '</div></div></div>';
+    html += '<div class="cc-desc"><b>标题：</b>' + (t.title || "-") + '<br><b>详情：</b>' + (t.ticketContent || "-") + '</div>';
+    if (follows.length) {
+      html += '<div class="cc-subtitle">跟进记录</div>';
+      follows.forEach(function (f) {
+        html += '<div class="cc-cohort"><div class="cc-cohort-name">' + (f.followerName || "客服") + '</div>';
+        html += '<div class="cc-cohort-meta">' + (f.content || "") + ' · ' + (f.createdAt || "").slice(0, 16) + '</div></div>';
+      });
+    } else {
+      html += '<div class="cc-subtitle">暂无客服回复</div>';
+    }
+    html += '</div>';
+    bubble.classList.add("course-bubble");
+    bubble.innerHTML = html;
+    scrollBottom();
+  } catch (e) {
+    bubble.textContent = "工单详情加载失败：" + e.message;
+  }
+}
+
+async function loadRefunds() {
+  const listEl = document.getElementById("refunds-list");
+  listEl.innerHTML = '<div class="info-empty">加载中…</div>';
+  try {
+    const resp = await fetch(DATA_API_BASE + "/api/v1/refund-requests", {
+      headers: { "X-User-Id": currentUserId() }
+    });
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    const data = await resp.json();
+    const refunds = (data.data && data.data.list) || [];
+    if (!refunds.length) { listEl.innerHTML = '<div class="info-empty">暂无退款记录</div>'; return; }
+    listEl.innerHTML = "";
+    refunds.forEach(function (r) {
+      const statusZh = REFUND_STATUS_MAP[r.refundStatusCode] || r.refundStatusCode || "未知";
+      const statusCls = ["pending", "approved", "rejected", "refunded"].includes(r.refundStatusCode) ? r.refundStatusCode : "unknown";
+      const card = document.createElement("div");
+      card.className = "order-card";
+      card.title = "点击查看退款详情";
+      card.onclick = function () { showRefundDetail(r.refundRequestId); };
+      card.innerHTML =
+        '<span class="oc-cover">💸</span>' +
+        '<span class="oc-id">' + (r.refundNo || r.refundRequestId) + '</span>' +
+        '<span class="oc-status ' + statusCls + '">' + statusZh + '</span>' +
+        '<span class="oc-amount">¥' + (r.applyAmount ?? "-") + '</span>' +
+        '<span class="oc-arrow">›</span>';
+      listEl.appendChild(card);
+    });
+  } catch (e) {
+    listEl.innerHTML = '<div class="info-empty">退款记录加载失败：' + e.message + '</div>';
+  }
+}
+
+async function showRefundDetail(refundId) {
+  const bubble = appendMsg("bot", "正在加载退款详情…");
+  try {
+    const resp = await fetch(DATA_API_BASE + "/api/v1/refund-requests/" + refundId, {
+      headers: { "X-User-Id": currentUserId() }
+    });
+    const r = (await resp.json()).data || {};
+    const statusZh = REFUND_STATUS_MAP[r.refundStatusCode] || r.refundStatusCode || "未知";
+    let html = '<div class="course-card">';
+    html += '<div class="cc-head"><span class="cc-icon">💸</span>';
+    html += '<div><div class="cc-name">退款单 ' + (r.refundNo || refundId) + '</div>';
+    html += '<div class="cc-meta">' + statusZh + ' · 申请于 ' + (r.appliedAt || "-").slice(0, 16) + '</div></div></div>';
+    html += '<div class="cc-desc">';
+    html += '<b>申请金额：</b>¥' + (r.applyAmount ?? "-") + '<br>';
+    html += '<b>已批金额：</b>¥' + (r.approvedAmount ?? "—") + '<br>';
+    html += '<b>审核时间：</b>' + (r.approvedAt || "—") + '<br>';
+    html += '<b>退款时间：</b>' + (r.refundedAt || "—");
+    html += '</div></div>';
+    bubble.classList.add("course-bubble");
+    bubble.innerHTML = html;
+    scrollBottom();
+  } catch (e) {
+    bubble.textContent = "退款详情加载失败：" + e.message;
+  }
+}
+
+// ===== tab 切换 =====
+let currentTab = "orders";
+function switchTab(name) {
+  currentTab = name;
+  document.querySelectorAll(".info-tabs .tab").forEach(function (t) {
+    t.classList.toggle("active", t.dataset.tab === name);
+  });
+  document.querySelectorAll(".tab-panel").forEach(function (p) { p.classList.add("hidden"); });
+  document.getElementById("tab-" + name).classList.remove("hidden");
+  if (name === "orders") loadOrders();
+  if (name === "cohorts") loadCohorts();
+  if (name === "courses") loadCourses();
+  if (name === "summary") loadSummary();
+  if (name === "coupons") loadCoupons();
+  if (name === "favorites") loadFavorites();
+  if (name === "tickets") loadTickets();
+  if (name === "refunds") loadRefunds();
+}
+function refreshCurrentTab() {
+  if (currentTab === "orders") loadOrders();
+  if (currentTab === "cohorts") loadCohorts();
+  if (currentTab === "courses") loadCourses();
+  if (currentTab === "summary") loadSummary();
+  if (currentTab === "coupons") loadCoupons();
+  if (currentTab === "favorites") loadFavorites();
+  if (currentTab === "tickets") loadTickets();
+  if (currentTab === "refunds") loadRefunds();
+}
+
+// ===== 历史对话加载 =====
+async function loadHistory() {
+  try {
+    const resp = await fetch(API_BASE + "/api/chat/history?sender_id=" + encodeURIComponent(currentUserId()));
+    if (!resp.ok) return;
+    const data = await resp.json();
+    const messages = data.messages || [];
+    // 只渲染最近 30 条，避免刷屏
+    const recent = messages.slice(-30);
+    recent.forEach(function (m) {
+      appendMsg(m.role === "user" ? "user" : "bot", m.text || "");
+    });
+    scrollBottom();
+  } catch (e) {
+    // 历史加载失败静默处理（首次访问没有历史很正常）
+  }
+}
+
+// 页面加载：拉订单 + 历史对话
+loadOrders();
+loadHistory();
+
+function scrollBottom() {
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function appendMsg(role, text) {
+  const row = document.createElement("div");
+  row.className = "msg-row " + role;
+
+  const avatar = document.createElement("div");
+  avatar.className = "msg-avatar";
+  avatar.textContent = role === "bot" ? "🤖" : "😊";
+
+  const wrap = document.createElement("div");
+  wrap.style.display = "flex";
+  wrap.style.flexDirection = "column";
+  wrap.style.maxWidth = "100%";
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.textContent = text;
+
+  const time = document.createElement("div");
+  time.className = "msg-time";
+  const now = new Date();
+  time.textContent =
+    now.getHours().toString().padStart(2, "0") + ":" +
+    now.getMinutes().toString().padStart(2, "0") + ":" +
+    now.getSeconds().toString().padStart(2, "0");
+
+  wrap.appendChild(bubble);
+  wrap.appendChild(time);
+  row.appendChild(avatar);
+  row.appendChild(wrap);
+  msgs.appendChild(row);
+  scrollBottom();
+  return bubble;
+}
+
+// 打字机效果：把一段文字逐字敲进气泡（模拟流式输出）
+async function typewriter(bubble, fullText, speed) {
+  bubble.textContent = "";
+  const chars = Array.from(fullText);
+  for (let i = 0; i < chars.length; i++) {
+    bubble.textContent += chars[i];
+    if (i % 3 === 0) scrollBottom();   // 每敲 3 个字滚动一次
+    await new Promise(r => setTimeout(r, speed || 18));
+  }
+  scrollBottom();
+}
+
+// 显示"正在输入…"气泡
+function showTyping() {
+  const row = document.createElement("div");
+  row.className = "msg-row bot";
+  row.id = "typing-row";
+  row.innerHTML = `
+    <div class="msg-avatar">🤖</div>
+    <div class="bubble typing"><span></span><span></span><span></span></div>`;
+  msgs.appendChild(row);
+  scrollBottom();
+}
+function hideTyping() {
+  const t = document.getElementById("typing-row");
+  if (t) t.remove();
+}
+
 async function send() {
   const input = document.getElementById("input");
   const text = input.value.trim();
   if (!text) return;
 
   const senderId = document.getElementById("user-id").value.trim() || "281";
-
   appendMsg("user", text);
   input.value = "";
   setBusy(true);
+  showTyping();
 
   try {
     const resp = await fetch(API_BASE + "/api/chat", {
@@ -194,16 +1156,28 @@ async function send() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ sender_id: senderId, text: text })
     });
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
     const data = await resp.json();
 
-    // 后端可能返回多条消息（如"好的，先处理XX" + 正式回复），逐条显示
+    hideTyping();
     if (data.messages && data.messages.length) {
-      data.messages.forEach((m, i) => appendMsg("bot", m.text || ""));
+      // 逐条显示：第一条用打字机效果（模拟流式），其余直接显示
+      for (let i = 0; i < data.messages.length; i++) {
+        const text = data.messages[i].text || "";
+        const bubble = appendMsg("bot", "");
+        if (i === data.messages.length - 1) {
+          await typewriter(bubble, text);          // 最后一条敲字
+        } else {
+          bubble.textContent = text;               // 前置消息（如"好的，先处理XX"）直接显示
+          scrollBottom();
+        }
+      }
     } else {
       appendMsg("bot", "（没有收到回复）");
     }
   } catch (e) {
-    appendMsg("bot", "请求失败：" + e.message + "（请确认 edu-agent 已在 18082 端口运行）");
+    hideTyping();
+    appendMsg("bot", "请求失败：" + e.message + "。请确认 edu-agent 已在 18082 端口运行。");
   } finally {
     setBusy(false);
     document.getElementById("input").focus();
@@ -214,19 +1188,31 @@ function setBusy(busy) {
   document.getElementById("send-btn").disabled = busy;
 }
 
-// 快捷按钮：把示例话术塞进输入框并直接发送
 function quick(text) {
   document.getElementById("input").value = text;
   send();
 }
 
-// 回车发送
+// 侧边栏联动：先切到对应信息 tab，再发话术
+function navTo(text, tabName) {
+  if (tabName) switchTab(tabName);
+  quick(text);
+}
+
+// 新会话：清空聊天区 + 重新放欢迎卡片（后端按 1 小时会话窗口自动管理，无需额外接口）
+function newSession() {
+  msgs.innerHTML = `
+    <div class="welcome-card">
+      <div class="wc-icon">👋</div>
+      <div class="wc-title">你好，我是教育智能客服</div>
+      <div class="wc-desc">新会话已开启。我可以帮你查订单、查学习进度、了解课程信息，<br>也可以帮你申请退款、提交问题工单。</div>
+    </div>`;
+  scrollBottom();
+}
+
 document.getElementById("input").addEventListener("keydown", function (e) {
   if (e.key === "Enter") send();
 });
-
-// 打开页面时显示欢迎语
-appendMsg("bot", "你好！我是教育智能客服。可以帮你查订单、查学习进度、申请退款、提交工单。试试下面的快捷按钮，或直接输入消息。");
 </script>
 </body>
 </html>

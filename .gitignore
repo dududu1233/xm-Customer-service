@@ -39,3 +39,6 @@ Thumbs.db
 *.sql.bak
 *.db.bak
 tmp/
+
+# ===== 截图（验收演示用，不上传）=====
+edu-study/screenshots/
