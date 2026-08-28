@@ -1,0 +1,207 @@
+slots:
+  order_number:
+    type: text
+    label: 订单号
+    description: 用户的订单号
+
+  order_status:
+    type: text
+    label: 订单状态
+    description: 订单当前状态
+
+  order_summary:
+    type: text
+    label: 订单摘要
+    description: 订单摘要信息
+
+  refund_reason:
+    type: text
+    label: 退款原因
+    description: 申请退款的原因
+
+  cohort_name:
+    type: text
+    label: 班次名称
+    description: 用户报名的班级名称（如 通用编程入门班·直播 202601期）
+
+  study_progress:
+    type: text
+    label: 学习进度
+    description: 学习进度摘要信息
+
+  ticket_type:
+    type: text
+    label: 工单类型
+    description: 问题所属类型（如 课程咨询、退费问题、技术问题、投诉建议）
+
+  ticket_description:
+    type: text
+    label: 问题描述
+    description: 用户描述的具体问题内容
+
+flows:
+  onboarding:
+    name: 欢迎引导
+    description: 在聊天窗口初次打开时欢迎用户，并介绍助手可处理的教育服务。这个 flow 通常由系统主动触发。
+    steps:
+      - id: start
+        type: start
+        next: respond
+
+      - id: respond
+        type: action
+        action: action_response
+        args:
+          text: "你好，这里是教育智能客服。我可以帮你查订单状态、查学习进度、了解课程信息，或者提交退款申请、问题工单。"
+        next: end
+
+      - id: end
+        type: end
+        next: [ ]
+
+  order_status_query:
+    name: 订单状态查询
+    description: 帮用户查询课程订单当前的处理状态，例如待付款、已支付、已取消。
+    steps:
+      - id: start
+        type: start
+        next: ask_order_number
+      - id: ask_order_number
+        type: collect
+        slot_name: order_number
+        response:
+          text: "请告诉我你的订单号。"
+        next: lookup_order_status
+      - id: lookup_order_status
+        type: action
+        action: action_lookup_order_status
+        next: show_order_status
+
+      - id: show_order_status
+        type: action
+        action: action_response
+        args:
+          text: "订单{{ slots.order_number }}当前状态是：{{ slots.order_status }}。{{ slots.order_summary }}"
+        next: end
+      - id: end
+        type: end
+        next: [ ]
+
+  study_progress_query:
+    name: 学习进度查询
+    description: 帮用户查询已报名班次的学习进度，包括出勤、视频学习、作业、考试情况。
+    steps:
+      - id: start
+        type: start
+        next: ask_cohort_name
+
+      - id: ask_cohort_name
+        type: collect
+        slot_name: cohort_name
+        response:
+          text: "请告诉我你要查询的班次名称。"
+        next: lookup_study_progress
+
+      - id: lookup_study_progress
+        type: action
+        action: action_lookup_study_progress
+        next: show_study_progress
+
+      - id: show_study_progress
+        type: action
+        action: action_response
+        args:
+          text: "{{ slots.study_progress }}"
+        next: end
+
+      - id: end
+        type: end
+        next: [ ]
+
+  refund_request:
+    name: 退款申请
+    description: 帮用户提交退款申请，收集订单号和退款原因，并提交到平台处理。
+    steps:
+      - id: start
+        type: start
+        next: ask_order_number
+
+      - id: ask_order_number
+        type: collect
+        slot_name: order_number
+        response:
+          text: "请告诉我你要退款的订单号。"
+        next: ask_refund_reason
+
+      - id: ask_refund_reason
+        type: collect
+        slot_name: refund_reason
+        response:
+          text: "请简单说一下退款原因。"
+        next: submit_refund
+
+      - id: submit_refund
+        type: action
+        action: action_submit_refund
+        next: end
+
+      - id: end
+        type: end
+        next: [ ]
+
+  ticket_submit:
+    name: 工单提交
+    description: 帮用户提交问题工单，收集订单号、问题类型和描述，提交给人工客服跟进。
+    steps:
+      - id: start
+        type: start
+        next: ask_order_number
+
+      - id: ask_order_number
+        type: collect
+        slot_name: order_number
+        response:
+          text: "请提供订单号，以便我们把工单关联到具体订单。"
+        next: ask_ticket_type
+
+      - id: ask_ticket_type
+        type: collect
+        slot_name: ticket_type
+        response:
+          text: "请选择问题类型（如 课程咨询、退费问题、技术问题、投诉建议）。"
+        next: ask_ticket_description
+
+      - id: ask_ticket_description
+        type: collect
+        slot_name: ticket_description
+        response:
+          text: "请描述一下你遇到的问题。"
+        next: submit_ticket
+
+      - id: submit_ticket
+        type: action
+        action: action_submit_ticket
+        next: end
+
+      - id: end
+        type: end
+        next: [ ]
+
+  human_handoff:
+    name: 人工客服
+    description: 将当前对话转交给人工客服处理。
+    steps:
+      - id: start
+        type: start
+        next: respond
+
+      - id: respond
+        type: action
+        action: action_response
+        args:
+          text: "好的，我来为你转接人工客服，请稍等。"
+        next: end
+
+      - id: end
+        type: end
+        next: [ ]

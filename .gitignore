@@ -1,0 +1,41 @@
+# ===== 虚拟环境（绝不提交）=====
+.venv/
+venv/
+env/
+ENV/
+
+# ===== Python 缓存 =====
+__pycache__/
+*.py[cod]
+*$py.class
+build/
+dist/
+wheels/
+*.egg-info
+.eggs/
+
+# ===== 密钥与本地配置（绝不提交）=====
+.env
+.env.*
+!.env.example
+
+# ===== 测试 / 日志 =====
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+logs/
+
+# ===== IDE / 系统 =====
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# ===== 工作区数据（本地 AI 辅助数据，不提交）=====
+.workbuddy/
+
+# ===== 数据库导出 / 临时 =====
+*.sql.bak
+*.db.bak
+tmp/

@@ -1,0 +1,24 @@
+[project]
+name = "edu-cs"
+version = "0.1.0"
+description = "教育智能客服系统"
+requires-python = ">=3.12"
+dependencies = [
+    # ===== agent 层（原 edu-study）=====
+    "langchain>=1.2.15",
+    "langchain-openai>=1.1.14",
+    "jinja2>=3.1.6",
+    "pyyaml>=6.0.3",
+    "pydantic-settings>=2.13.1",
+    # ===== 共用 =====
+    "fastapi>=0.136.0",
+    "httpx>=0.28.1",
+    "sqlalchemy>=2.0.49",
+    "uvicorn[standard]>=0.44.0",
+    # ===== data 层（来自 edu-data）=====
+    "pymysql>=1.1.2",
+    "asyncmy>=0.2.11",
+    "tzdata>=2026.3",
+    "python-dotenv>=1.1.1",
+    "loguru>=0.7.3",
+]
